@@ -10,7 +10,7 @@ export class AppClass {
     }
     
     async createTestBot(count) {
-        const res = await Bot.create({token: `5083463723:AAEsgaiRO6HGhIWrGcn-99-12Sk--J1Pn4I`, status: true})
+        const res = await Bot.create({token: `bnbn`, status: true})
         await Screen.create({owner: res._id, name: 'start', text: 'Проверка текста'}) 
     }
 
