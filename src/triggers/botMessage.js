@@ -1,15 +1,18 @@
+import { AppClass } from "../classes/AppClass.js"
 
 export const botMessage = async (bot, botA) => {
     try{
         bot.on('message', async (ctx) => {
             if(ctx.message.chat.id > 0 && !ctx.from.is_bot){
-                console.log(ctx.message.text)
+                const app = new AppClass()
+                app.createScreen(ctx)
+                // console.log(ctx.message)
                 // console.log(ctx.message)
                 // console.log(ctx.update_id)
 
-                const screen = await botA.getScreen('test18')
-                if(screen.status) await botA.message(ctx, screen, ctx.message.chat.id) 
-                else await botA.errorMessage(ctx, screen, ctx.message.chat.id)
+                // const screen = await botA.getScreen('test18')
+                // if(screen.status) await botA.message(ctx, screen, ctx.message.chat.id) 
+                // else await botA.errorMessage(ctx, screen, ctx.message.chat.id)
             }
         })
     }

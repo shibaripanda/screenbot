@@ -8,6 +8,7 @@ import { botMessage } from './src/triggers/botMessage.js'
 import { botCallback } from './src/triggers/botCallback.js'
 import { botChatMember } from './src/triggers/botChatMember.js'
 import { botCommands } from './src/triggers/botCommands.js'
+import { readTextFile } from './src/helper/readTextFile.js'
 
 
 async function startBot(){
@@ -19,6 +20,7 @@ async function startBot(){
             // await app.deleteAllBots()
             // await app.createTestBot()
             // await app.createScreen()
+            // readTextFile('./src/text/1. Приветствие.txt')
             const appContext = await app.getAllActiveBots()
             if(appContext.length){
                 for(const i of appContext){
@@ -29,7 +31,10 @@ async function startBot(){
                     await botCommands(bot, botA)
                     await botMessage(bot, botA)
                     await botCallback(bot, botA)
-                    bot.launch(option).catch((error) => {console.log(i._id, '\n', error)})
+                    bot.launch(option).catch((error) => {
+                        console.log(i._id, '\n', error)
+                        bot.launch(option)
+                    })
                     process.once('SIGINT', () => bot.stop('SIGINT'))
                     process.once('SIGTERM', () => bot.stop('SIGTERM'))
                 }
