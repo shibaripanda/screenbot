@@ -5,7 +5,10 @@ export const botMessage = async (bot, botA) => {
         bot.on('message', async (ctx) => {
             if(ctx.message.chat.id > 0 && !ctx.from.is_bot){
                 const app = new AppClass()
-                app.createScreen(ctx)
+                await app.addMediaToScreen(ctx)
+
+                // const screen = await botA.getScreen(ctx.message.caption)
+                // await botA.message(ctx, screen, ctx.message.chat.id)
                 // console.log(ctx.message)
                 // console.log(ctx.message)
                 // console.log(ctx.update_id)

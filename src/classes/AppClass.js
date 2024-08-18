@@ -1,3 +1,4 @@
+import { type } from "os"
 import { readTextFile } from "../helper/readTextFile.js"
 import { screensStart } from "../helper/screenCreater.js"
 import { Bot } from "../models/bot.js"
@@ -37,23 +38,53 @@ export class AppClass {
     //     })
     // }
 
-    async createScreen(ctx) {
-        const scr = screensStart.find(item => item.screen === ctx.message.caption)
-        if(scr){
-            fs.readFile(`./src/text/${scr.text}`, 'utf8', async (err, text) => {
+    async createScreens() {
+        for(const i of screensStart){
+            fs.readFile(`./src/text/${i.text}`, 'utf8', async (err, text) => {
                 if (err) throw err
                     console.log(text) 
-                    await Screen.updateOne({name: scr.screen}, {
+                    await Screen.updateOne({name: i.screen}, {
                         owner: '66bbd8ff1552e60673dc1dc7', 
                         // name: scr.screen, 
                         text: text, 
-                        media: [{type: "photo", media: ctx.message.photo[0].file_id}],
-                        buttons: scr.buttons,
+                        media: [],
+                        buttons: i.buttons,
                         protect: true,
                         status: true
                     }, {upsert: true})
             })
         }
+    }
+
+    async addMediaToScreen(ctx){
+        // console.log(ctx.message.caption)
+        console.log(ctx.message.video_note.file_id)
+        if(typeof ctx.message['photo'] !== 'undefined'){
+            console.log('photo')
+            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'photo', media: ctx.message.photo[0].file_id}}}) 
+        }
+        else if(typeof ctx.message['video'] !== 'undefined'){
+            console.log('video')
+            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'video', media: ctx.message.video.file_id}}}) 
+        }
+        else if(typeof ctx.message['document'] !== 'undefined'){
+            console.log('document')
+            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'document', media: ctx.message.document.file_id}}}) 
+        }
+        else if(typeof ctx.message['audio'] !== 'undefined'){
+            console.log('audio')
+            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'audio', media: ctx.message.audio.file_id}}}) 
+        }
+        else if(typeof ctx.message['voice'] !== 'undefined'){
+            console.log('voice')
+            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'audio', media: ctx.message.voice.file_id}}}) 
+        }
+        else if(typeof ctx.message['video_note'] !== 'undefined'){
+            console.log('voice')
+            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'video', media: ctx.message.video_note.file_id}}}) 
+        }
+        // console.log(res)
+        
     }
 
     async deleteAllBots() {

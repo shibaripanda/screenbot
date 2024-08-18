@@ -19,7 +19,7 @@ async function startBot(){
             const app = new AppClass()
             // await app.deleteAllBots()
             // await app.createTestBot()
-            // await app.createScreen()
+            // await app.createScreens()
             // readTextFile('./src/text/1. Приветствие.txt')
             const appContext = await app.getAllActiveBots()
             if(appContext.length){
