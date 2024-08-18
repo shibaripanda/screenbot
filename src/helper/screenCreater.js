@@ -149,7 +149,7 @@ export const screensStart = [
     },
     {
         screen: 'screen_17',
-        text: 'j.txt',
+        text: '18. Реквизиты карты.txt',
         buttons: [
             [{ text: 'назад', callback_data: 'screen_6' }]
         ]
