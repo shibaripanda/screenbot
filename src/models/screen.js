@@ -5,7 +5,8 @@ const Schema = mongoose.Schema
 const screenSchema = new Schema({
 owner: {
     type: String,
-    required: false,
+    required: true,
+    default: '66bbd8ff1552e60673dc1dc7',
 },
 name: {
     type: String,
@@ -13,7 +14,18 @@ name: {
 },
 media: {
     type: Array,
-    required: false,
+    required: true,
+    default: []
+},
+document: {
+    type: Array,
+    required: true,
+    default: []
+},
+audio: {
+    type: Array,
+    required: true,
+    default: []
 },
 text: {
     type: String,
@@ -21,16 +33,18 @@ text: {
 },
 buttons: {
     type: Array,
-    required: false,
+    required: true,
+    default: []
 },
 protect: {
     type: Boolean,
-    required: false,
+    required: true,
+    default: true
 },
 status: {
     type: Boolean,
-    required: false,
-    default: false
+    required: true,
+    default: true
 }
 }, { timestamps: true});
 

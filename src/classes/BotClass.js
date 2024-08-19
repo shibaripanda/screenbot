@@ -6,20 +6,31 @@ export class BotClass {
         this.botId = botId
     }
 
-    async message(ctx, screen, userId){
+    async message1(ctx, screen, userId){
+
+        const sendText = async(ctx, text, userId, protect) => {
+            await ctx.telegram.sendMessage(userId, text, {parse_mode: 'HTML', protect_content: protect}).catch(error => console.log(error))
+        }
+
         if(screen.text !== '' && !screen.buttons.length && !screen.media.length){
             const len = Math.ceil(screen.text.length / 4096)
             if(len === 1){
-                await ctx.telegram.sendMessage(userId, screen.text, {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
+                await sendText(ctx, screen.text, userId, screen.protect)
             }
             else{
                 let x = 0
                 let y = 4096
                 for(i = 0; i < len; i++){
-                    await ctx.telegram.sendMessage(userId, screen.text.substring(x, y), {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
+                    await sendText(ctx, screen.text.substring(x, y), userId, screen.protect)
                     x = x + 4096 + 1
-                    if(i === len - 1) y = screen.text.length
-                    else y = y + 4096 + 1
+                    if(i === len - 1){
+                        y = screen.text.length
+                        await sendText(ctx, screen.text.substring(x, y), userId, screen.protect)
+                        break
+                    }
+                    else{
+                        y = y + 4096 + 1
+                    }
                 }
             }
         }
@@ -143,6 +154,24 @@ export class BotClass {
         else{
             console.log('Нихуя не совпало (')
         }
+    }
+
+    async message(ctx, screen, userId){
+        console.log(screen)
+
+        if(screen.media.length){
+            await ctx.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
+        }
+        if(screen.document.length){
+            await ctx.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
+        }
+        if(screen.audio.length){
+            await ctx.telegram.sendMediaGroup(userId, screen.audio, {protect_content: screen.protect}).catch(error => console.log(error))
+        }
+        if(screen.text.length){
+            await ctx.telegram.sendMessage(userId, screen.text, {protect_content: screen.protect}).catch(error => console.log(error))
+        }
+
     }
 
     async errorMessage(ctx, screen, userId){

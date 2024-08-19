@@ -57,34 +57,52 @@ export class AppClass {
     }
 
     async addMediaToScreen(ctx){
-        // console.log(ctx.message.caption)
-        console.log(ctx.message.video_note.file_id)
-        if(typeof ctx.message['photo'] !== 'undefined'){
-            console.log('photo')
-            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'photo', media: ctx.message.photo[0].file_id}}}) 
+        if((ctx.message.caption && ctx.message.caption.substring(0, 6) === 'screen') || ctx.message.text.substring(0, 6)){
+            
+            if(typeof ctx.message['photo'] !== 'undefined'){
+                const caption = ctx.message.caption.split(' ')[0]
+                const name = ctx.message.caption.split(' ')[1] ? ctx.message.caption.split(' ')[1] : 'noname'
+                console.log('photo')
+                const res = await Screen.updateOne({name: caption}, {$addToSet: {media: {name: name, type: 'photo', media: ctx.message.photo[0].file_id}}}, {upsert: true}) 
+            }
+            else if(typeof ctx.message['video'] !== 'undefined'){
+                const caption = ctx.message.caption.split(' ')[0]
+                const name = ctx.message.caption.split(' ')[1] ? ctx.message.caption.split(' ')[1] : 'noname'
+                console.log('video')
+                const res = await Screen.updateOne({name: caption}, {$addToSet: {media: {name: name, type: 'video', media: ctx.message.video.file_id}}}, {upsert: true}) 
+            }
+            else if(typeof ctx.message['document'] !== 'undefined'){
+                const caption = ctx.message.caption.split(' ')[0]
+                const name = ctx.message.caption.split(' ')[1] ? ctx.message.caption.split(' ')[1] : 'noname'
+                console.log('document')
+                const res = await Screen.updateOne({name: caption}, {$addToSet: {document: {name: name, type: 'document', media: ctx.message.document.file_id}}}, {upsert: true}) 
+            }
+            else if(typeof ctx.message['audio'] !== 'undefined'){
+                const caption = ctx.message.caption.split(' ')[0]
+                const name = ctx.message.caption.split(' ')[1] ? ctx.message.caption.split(' ')[1] : 'noname'
+                console.log('audio')
+                const res = await Screen.updateOne({name: caption}, {$addToSet: {audio: {name: name, type: 'audio', media: ctx.message.audio.file_id}}}, {upsert: true}) 
+            }
+            else if(typeof ctx.message['voice'] !== 'undefined'){
+                const caption = ctx.message.caption.split(' ')[0]
+                const name = ctx.message.caption.split(' ')[1] ? ctx.message.caption.split(' ')[1] : 'noname'
+                console.log('voice')
+                const res = await Screen.updateOne({name: caption}, {$addToSet: {audio: {name: name, type: 'audio', media: ctx.message.voice.file_id}}}, {upsert: true}) 
+            }
+            else if(typeof ctx.message['text'] !== 'undefined'){
+                const caption = ctx.message.text.split(' ')[0]
+                console.log('text')
+                const res = await Screen.updateOne({name: caption}, {text: ctx.message.text}, {upsert: true}) 
+            }
+            // else if(typeof ctx.message['video_note'] !== 'undefined'){
+            //     console.log('voice')
+            //     const res = await Screen.updateOne({name: caption}, {$addToSet: {audio: {name: name, type: 'video', media: ctx.message.video_note.file_id}}}) 
+            // }
+            // console.log(res)
         }
-        else if(typeof ctx.message['video'] !== 'undefined'){
-            console.log('video')
-            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'video', media: ctx.message.video.file_id}}}) 
-        }
-        else if(typeof ctx.message['document'] !== 'undefined'){
-            console.log('document')
-            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'document', media: ctx.message.document.file_id}}}) 
-        }
-        else if(typeof ctx.message['audio'] !== 'undefined'){
-            console.log('audio')
-            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'audio', media: ctx.message.audio.file_id}}}) 
-        }
-        else if(typeof ctx.message['voice'] !== 'undefined'){
-            console.log('voice')
-            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'audio', media: ctx.message.voice.file_id}}}) 
-        }
-        else if(typeof ctx.message['video_note'] !== 'undefined'){
-            console.log('voice')
-            const res = await Screen.updateOne({name: ctx.message.caption}, {$addToSet: {media: {type: 'video', media: ctx.message.video_note.file_id}}}) 
-        }
-        // console.log(res)
-        
+        else{
+            console.log('Нихуя не записано')
+        }  
     }
 
     async deleteAllBots() {
