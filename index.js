@@ -24,6 +24,7 @@ async function startBot(){
             const appContext = await app.getAllActiveBots()
             if(appContext.length){
                 for(const i of appContext){
+                    console.log(i.token)
                     const bot = new Telegraf(i.token)
                     const botA = new BotClass(i._id)
                     await botStart(bot, botA)
@@ -33,7 +34,7 @@ async function startBot(){
                     await botCallback(bot, botA)
                     bot.launch(option).catch((error) => {
                         console.log(i._id, '\n', error)
-                        bot.launch(option)
+                        // bot.launch(option)
                     })
                     process.once('SIGINT', () => bot.stop('SIGINT'))
                     process.once('SIGTERM', () => bot.stop('SIGTERM'))
