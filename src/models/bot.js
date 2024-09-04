@@ -3,9 +3,11 @@ import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 
 export const BotSchema = new Schema({
-    owner: {type: Number},
-    token: {type: String},
-    status: {type: Boolean}
+  owner: {type: Number},
+  token: {type: String},
+  status: {type: Boolean},
+  name: {type: String},
+  username: {type: String},
   }, {timestamps: true})
 
 // const botSchema = new Schema({

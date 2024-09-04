@@ -179,7 +179,7 @@ export class BotClass {
     }
 
     async getScreen(screenName){
-        const res = await Screen.findOne({owner: this.botId, name: screenName})
+        const res = await Screen.findOne({owner: this.botId, index: screenName})
         return res
     }
 
