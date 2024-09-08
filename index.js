@@ -20,18 +20,22 @@ async function startBot(){
         const bots = []
         const app = new AppClass()
         useConnectSocket()
+
         SocketApt.socket.on('onBot', async (data) => {
             await app.startBot(bots, data)
         })
         SocketApt.socket.on('offBot', async (data) => {
             await app.stopBot(bots, data)
         })
+        SocketApt.socket.on('sendMeScreen', async (data) => {
+            const botModule = bots.find(item => item._id == data.botId)
+            const screen = await botModule.getScreen(data.screenId)
+            await botModule.message(screen, data.userId)
+        })
         SocketApt.socket.emit('helloFromServer', process.env.SERVER_TOKEN)
+
         if(status){
-            const app = new AppClass()
-            // readTextFile('./src/text/1. Приветствие.txt')
             const appContext = await app.getAllActiveBots()
-            
             if(appContext.length){
                 for(const i of appContext){
                     await startBots(i, bots)

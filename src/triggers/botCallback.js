@@ -1,12 +1,13 @@
 
-export const botCallback = async (bot, botA) => {
+export const botCallback = async (botModule) => {
     try{
-        bot.on('callback_query', async (ctx) => {
+        botModule.bot.on('callback_query', async (ctx) => {
             console.log(ctx.update.update_id)
+            console.log(ctx.update.callback_query.data)
 
-            const screen = await botA.getScreen(ctx.update.callback_query.data)
-            if(screen.status) await botA.message(ctx, screen, ctx.update.callback_query.from.id)
-            else await botA.errorMessage(ctx, screen, ctx.update.callback_query.from.id)
+            const screen = await botModule.getScreen(ctx.update.callback_query.data) 
+            if(screen) await botModule.message(screen, ctx.update.callback_query.from.id)
+            else await botModule.errorMessage(ctx.update.callback_query.from.id)
             ctx.answerCbQuery()
 
         })

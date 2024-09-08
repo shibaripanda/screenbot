@@ -8,6 +8,7 @@ export const BotSchema = new Schema({
   status: {type: Boolean},
   name: {type: String},
   username: {type: String},
+  mode: {type: String},
   }, {timestamps: true})
 
 // const botSchema = new Schema({

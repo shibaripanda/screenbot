@@ -10,18 +10,17 @@ export const startBots = async (i, bots) => {
     const option = {allowedUpdates: ['my_chat_member', 'chat_member', 'callback_query', 'message', 'channel_post'], dropPendingUpdates: true}
     
     const bot = new Telegraf(i.token)
-    const botA = new BotClass(i._id)
-    await botStart(bot, botA)
-    await botChatMember(bot, botA)
-    await botCommands(bot, botA)
-    await botMessage(bot, botA)
-    await botCallback(bot, botA)
-    bot.launch(option).catch((error) => {
-        console.log(i._id, '\n', error)
-        // bot.launch(option)
+    const botModule = new BotClass(bot, i)
+    await botStart(botModule)
+    // await botChatMember(botModule)
+    // await botCommands(botModule)
+    await botMessage(botModule)
+    await botCallback(botModule)
+    botModule.bot.launch(option).catch((error) => {
+        console.log(botModule.username, '\n', error)
     })
-    bots.push({_id: i._id, bot: bot, name: i.username})
-    process.once('SIGINT', () => bot.stop('SIGINT'))
-    process.once('SIGTERM', () => bot.stop('SIGTERM'))
-    console.log('start bot:', i.username)
+    bots.push(botModule)
+    process.once('SIGINT', () => botModule.bot.stop('SIGINT'))
+    process.once('SIGTERM', () => botModule.bot.stop('SIGTERM'))
+    console.log('Start bot:', botModule.username)
 }

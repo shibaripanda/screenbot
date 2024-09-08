@@ -1,186 +1,64 @@
+import { Markup } from "telegraf"
 import { Screen } from "../models/screen.js"
+import { SocketApt } from "../socket/api/socket-api.js"
 
 export class BotClass {
 
-    constructor(botId) {
-        this.botId = botId
+    constructor(bot, data) {
+        this.bot = bot
+        this.owner = data.owner
+        this.name = data.name
+        this.username = data.username
+        this._id = data._id
+        this.status = data.status
+        this.mode = data.mode
     }
 
-    async message1(ctx, screen, userId){
+ 
+    async message(screen, userId){
 
-        const sendText = async(ctx, text, userId, protect) => {
-            await ctx.telegram.sendMessage(userId, text, {parse_mode: 'HTML', protect_content: protect}).catch(error => console.log(error))
-        }
-
-        if(screen.text !== '' && !screen.buttons.length && !screen.media.length){
-            const len = Math.ceil(screen.text.length / 4096)
-            if(len === 1){
-                await sendText(ctx, screen.text, userId, screen.protect)
-            }
-            else{
-                let x = 0
-                let y = 4096
-                for(i = 0; i < len; i++){
-                    await sendText(ctx, screen.text.substring(x, y), userId, screen.protect)
-                    x = x + 4096 + 1
-                    if(i === len - 1){
-                        y = screen.text.length
-                        await sendText(ctx, screen.text.substring(x, y), userId, screen.protect)
-                        break
-                    }
-                    else{
-                        y = y + 4096 + 1
-                    }
+        const keyboard = () => {
+            if(screen.buttons.length){
+               const res = []
+                for(const i of screen.buttons){
+                    res.push(i.map(item => Markup.button[item.action](item.text, item.to)))
                 }
+                return Markup.inlineKeyboard(res) 
             }
         }
-        else if(screen.text !== '' && screen.buttons.length && screen.media.length){
-            if(screen.media.length === 1){
-                const len = Math.ceil(screen.text.length / 1024)
-                if(len === 1){
-                    await ctx.telegram.sendPhoto(userId, screen.media[0].media, {caption: screen.text, reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                }
-                else{
-                    // await ctx.telegram.sendPhoto(userId, screen.media[0].media, {caption: screen.text.substring(0, 1024), reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                    await ctx.telegram.sendPhoto(userId, screen.media[0].media, {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                    const len = Math.ceil(screen.text.length / 4096)
-                    if(len === 1){
-                        await ctx.telegram.sendMessage(userId, screen.text, {caption: screen.text.substring(0, 1024), reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                    }
-                    else{
-                        let x = 0
-                        let y = 4096
-                        for(i = 0; i < len; i++){
-                            await ctx.telegram.sendMessage(userId, screen.text.substring(x, y), {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                            x = x + 4096 + 1
-                            if(i === len - 1) {
-                                y = screen.text.length
-                                await ctx.telegram.sendMessage(userId, screen.text.substring(x, y), {reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                                break
-                            }
-                            else y = y + 4096 + 1
-                        }
-                    }
-                }
-            }
-            else{
-                await ctx.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
-                const len = Math.ceil(screen.text.length / 4096)
-                if(len === 1){
-                    await ctx.telegram.sendMessage(userId, screen.text.substring(0, 1024), {reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                }
-                else{
-                    let x = 0
-                    let y = 4096
-                    for(i = 0; i < len; i++){
-                        await ctx.telegram.sendMessage(userId, screen.text.substring(x, y), {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                        x = x + 4096 + 1
-                        if(i === len - 1) {
-                            y = screen.text.length
-                            await ctx.telegram.sendMessage(userId, screen.text.substring(x, y), {reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                            break
-                        }
-                        else y = y + 4096 + 1
-                    }
-                } 
-                // await ctx.telegram.sendMessage(userId, screen.text, {reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-            }
-        }
-        else if(screen.text !== '' && !screen.buttons.length && screen.media.length){
-            const len = Math.ceil(screen.text.length / 1024)
-            if(len === 1){
-                screen.media[0].caption = screen.text
-                await ctx.telegram.sendMediaGroup(
-                    userId, 
-                    screen.media, 
-                    {
-                        parse_mode: 'HTML', 
-                        protect_content: screen.protect,
-                    }
-                ).catch(error => console.log(error))
-            }
-            else{
-                await ctx.telegram.sendMediaGroup(userId, screen.media, {parse_mode: 'HTML', protect_content: screen.protect,}).catch(error => console.log(error))
-                const len = Math.ceil(screen.text.length / 4096)
-                if(len === 1){
-                    await ctx.telegram.sendMessage(userId, screen.text, {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                }
-                else{
-                    let x = 0
-                    let y = 4096
-                    for(i = 0; i < len; i++){
-                        await ctx.telegram.sendMessage(userId, screen.text.substring(x, y), {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-                        x = x + 4096 + 1
-                        if(i === len - 1) {
-                            y = screen.text.length
-                        }
-                        else y = y + 4096 + 1
-                    }
-                }
-            }
-        }
-        else if(screen.text !== '' && screen.buttons.length && !screen.media.length){
-            await ctx.telegram.sendMessage(
-                userId, 
-                screen.text, 
-                {
-                    parse_mode: 'HTML', 
-                    protect_content: screen.protect, 
-                    reply_markup: {
-                        inline_keyboard: screen.buttons
-                    }
-                }
-            ).catch(error => console.log(error))
-        }
-        else if(screen.text === '' && !screen.buttons.length && screen.media.length){
-            await ctx.telegram.sendMediaGroup(
-                userId, 
-                screen.media, 
-                {
-                    parse_mode: 'HTML', 
-                    protect_content: screen.protect,
-                }
-            ).catch(error => console.log(error))
-        }
-        else if(screen.text === '' && screen.buttons.length && screen.media.length){
-            if(screen.media.length === 1){
-                await ctx.telegram.sendPhoto(userId, screen.media[0].media, {reply_markup: {inline_keyboard: screen.buttons}, protect_content: screen.protect}).catch(error => console.log(error))
-            }
-            else{
-                await ctx.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
-                await ctx.telegram.sendMessage(userId, '-', {reply_markup: {inline_keyboard: screen.buttons}, parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
-            }
-        }
-        else{
-            console.log('Нихуя не совпало (')
-        }
-    }
-
-    async message(ctx, screen, userId){
-        console.log(screen)
+        
 
         if(screen.media.length){
-            await ctx.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
+            await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
         }
         if(screen.document.length){
-            await ctx.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
+            await this.bot.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
         }
         if(screen.audio.length){
-            await ctx.telegram.sendMediaGroup(userId, screen.audio, {protect_content: screen.protect}).catch(error => console.log(error))
+            await this.bot.telegram.sendMediaGroup(userId, screen.audio, {protect_content: screen.protect}).catch(error => console.log(error))
         }
         if(screen.text.length){
-            await ctx.telegram.sendMessage(userId, screen.text, {protect_content: screen.protect}).catch(error => console.log(error))
+            await this.bot.telegram.sendMessage(userId, screen.text, {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error))
         }
 
     }
 
-    async errorMessage(ctx, screen, userId){
-        await ctx.telegram.sendMessage(userId, 'Действие более недоступно', {parse_mode: 'HTML', protect_content: screen.protect}).catch(error => console.log(error))
+    async errorMessage(userId){
+        await this.bot.telegram.sendMessage(userId, 'error', {parse_mode: 'HTML', protect_content: false}).catch(error => console.log(error))
     }
 
-    async getScreen(screenName){
-        const res = await Screen.findOne({owner: this.botId, index: screenName})
+    async getZeroScreen(){
+        const res = await Screen.findOne({owner: this._id, index: 'screen_0'})
         return res
+    }
+
+    async getScreen(screenId){
+        const res = await Screen.findOne({owner: this._id, _id: screenId})
+        return res
+    }
+
+    async createScreen(data){
+        SocketApt.socket.emit('newScreen', {botId: this._id, screenName: this.mode,  data: data})
     }
 
 }
