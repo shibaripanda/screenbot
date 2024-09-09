@@ -2,8 +2,9 @@
 export const botMessage = async (botModule) => {
     try{
         botModule.bot.on('message', async (ctx) => {
+            await botModule.updateBotData()
             if(ctx.message.chat.id > 0 && !ctx.from.is_bot){
-                // if(botModule.owner == ctx.message.chat.id && botModule.mode !== 'edit'){
+                if(botModule.owner == ctx.message.chat.id && botModule.mode !== ''){
 
                     console.log(botModule.mode)
 
@@ -30,8 +31,11 @@ export const botMessage = async (botModule) => {
                         console.log(ctx.message.caption)
                     }
                 }
+                else{
+                    console.log('no new screen')
+                }
 
-            // }
+            }
         })
     }
     catch(error){

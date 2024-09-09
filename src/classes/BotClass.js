@@ -1,6 +1,8 @@
 import { Markup } from "telegraf"
 import { Screen } from "../models/screen.js"
 import { SocketApt } from "../socket/api/socket-api.js"
+import { AppClass } from "./AppClass.js"
+
 
 export class BotClass {
 
@@ -12,6 +14,11 @@ export class BotClass {
         this._id = data._id
         this.status = data.status
         this.mode = data.mode
+    }
+
+    async updateBotData(){
+        const app = new AppClass()
+        this.mode = (await app.getBot(this._id)).mode
     }
 
  
@@ -58,7 +65,11 @@ export class BotClass {
     }
 
     async createScreen(data){
-        SocketApt.socket.emit('newScreen', {botId: this._id, screenName: this.mode,  data: data})
+        // this.mode = await AppClass.getBot({_id: this._id}).mode
+        const screen = await Screen.create({owner: this._id, name: this.mode, text: data})
+        this.message(screen, this.owner)
+        await this.bot.telegram.sendMessage(this.owner, 'Done! Close window on your pc or send new variant').catch(error => console.log(error))
+        // SocketApt.socket.emit('newScreen', {botId: this._id, screenName: this.mode,  data: data})
     }
 
 }
