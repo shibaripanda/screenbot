@@ -31,6 +31,7 @@ async function startBot(){
             const botModule = bots.find(item => item._id == data.botId)
             const screen = await botModule.getScreen(data.screenId)
             await botModule.message(screen, data.userId)
+            console.log('sendMeScreen')
         })
         SocketApt.socket.emit('helloFromServer', process.env.SERVER_TOKEN)
 
