@@ -40,7 +40,7 @@ export class BotClass {
         }
 
         if(!screen.media.length && !screen.document.length && !screen.audio.length && screen.text == ''){
-            await this.bot.telegram.sendMessage(userId, `Empty "${this.mode}" screen.\nAdd content: videos, photos, voice, audio, files or text`, {protect_content: screen.protect}).catch(error => console.log(error))
+            await this.bot.telegram.sendMessage(userId, `Empty screen.\nAdd content: videos, photos, voice, audio, files or text`, {protect_content: screen.protect}).catch(error => console.log(error))
         }
         else{
             if(screen.media.length && !screen.document.length && !screen.audio.length){
@@ -138,19 +138,19 @@ export class BotClass {
 
     async createScreen(field, data){
         if(field === 'TEXT' || field === 'CAPTION'){
-            await Screen.updateOne({owner: this._id, name: this.mode}, {text: data})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {text: data})
         }
         else if(field === 'PHOTO'){
-            await Screen.updateOne({owner: this._id, name: this.mode}, {$addToSet: {media: {type: 'photo', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data}}})
         }
         else if(field === 'VIDEO'){
-            await Screen.updateOne({owner: this._id, name: this.mode}, {$addToSet: {media: {type: 'video', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data}}})
         }
         else if(field === 'VOICE'){
-            await Screen.updateOne({owner: this._id, name: this.mode}, {$addToSet: {audio: {type: 'audio', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data}}})
         }
         else if(field === 'DOCUMENT'){
-            await Screen.updateOne({owner: this._id, name: this.mode}, {$addToSet: {document: {type: 'document', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data}}})
         }
     }
 

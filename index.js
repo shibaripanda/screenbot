@@ -24,6 +24,9 @@ async function startBot(){
         SocketApt.socket.on('onBot', async (data) => {
             await app.startBot(bots, data)
         })
+        SocketApt.socket.on('getBot', (data) => {
+            console.log(data)
+          })
         SocketApt.socket.on('offBot', async (data) => {
             await app.stopBot(bots, data)
         })
@@ -34,7 +37,7 @@ async function startBot(){
             await botModule.message(screen, data.userId)
             console.log('sendMeScreen')
         })
-        SocketApt.socket.emit('helloFromServer', process.env.SERVER_TOKEN)
+        // SocketApt.socket.emit('helloFromServer', process.env.SERVER_TOKEN)
 
         if(status){
             const appContext = await app.getAllActiveBots()

@@ -7,6 +7,7 @@ export class SocketApt {
         this.socket = io(process.env.SERVER_AUTH_LINK, {auth: {token: {'Authorization': 'Bearer ' + 'hjhjhjhjhj'}}})
 
         this.socket.on('connect', () => {
+            SocketApt.socket.emit('helloFromServer', process.env.SERVER_TOKEN)
             console.log('connect')
         })
 
