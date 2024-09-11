@@ -39,49 +39,87 @@ export class BotClass {
             return screen.text
         }
 
-        if(screen.media.length && !screen.document.length && !screen.audio.length){
-            if(screen.media.length == 1 && screen.media[0].type == 'photo'){
-                await this.bot.telegram.sendPhoto(userId, screen.media[0].media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error))  
-            }
-            else if(screen.media.length == 1 && screen.media[0].type == 'video'){
-                await this.bot.telegram.sendVideo(userId, screen.media[0].media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error))  
-            }
-            else{
-               if(!screen.buttons.length){
-                    screen.media[0].caption = screen.text
-                    await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))  
-                }
-                else{
-                    await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
-                    await this.bot.telegram.sendMessage(userId, emptyText(), {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error)) 
-                } 
-            }
-        }
-        else if(!screen.media.length && screen.document.length && !screen.audio.length){
-            if(!screen.buttons.length){
-                screen.document[screen.document.length - 1].caption = screen.text
-                await this.bot.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
-            }
-            else{
-                await this.bot.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
-                await this.bot.telegram.sendMessage(userId, emptyText(), {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error))
-            }   
+        if(!screen.media.length && !screen.document.length && !screen.audio.length && screen.text == ''){
+            await this.bot.telegram.sendMessage(userId, `Empty "${this.mode}" screen.\nAdd content: videos, photos, voice, audio, files or text`, {protect_content: screen.protect}).catch(error => console.log(error))
         }
         else{
-            if(screen.media.length){
-                await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
+            if(screen.media.length && !screen.document.length && !screen.audio.length){
+                if(screen.media.length == 1 && screen.media[0].type == 'photo'){
+                    await this.bot.telegram.sendPhoto(userId, screen.media[0].media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error))  
+                }
+                else if(screen.media.length == 1 && screen.media[0].type == 'video'){
+                    await this.bot.telegram.sendVideo(userId, screen.media[0].media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error))  
+                }
+                else{
+                   if(!screen.buttons.length){
+                        screen.media[0].caption = screen.text
+                        await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))  
+                    }
+                    else{
+                        await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
+                        await this.bot.telegram.sendMessage(userId, emptyText(), {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error)) 
+                    } 
+                }
             }
-            if(screen.document.length){
-                await this.bot.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
+            else if(!screen.media.length && screen.document.length && !screen.audio.length){
+                if(screen.document.length == 1){
+                    await this.bot.telegram.sendDocument(userId, screen.document[0].media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error)) 
+                }
+                else{
+                    if(!screen.buttons.length){
+                        screen.document[screen.document.length - 1].caption = screen.text
+                        await this.bot.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
+                    }
+                    else{
+                        await this.bot.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
+                        await this.bot.telegram.sendMessage(userId, emptyText(), {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error))
+                    } 
+                } 
             }
-            if(screen.audio.length){
-                await this.bot.telegram.sendMediaGroup(userId, screen.audio, {protect_content: screen.protect}).catch(error => console.log(error))
+            else if(!screen.media.length && !screen.document.length && screen.audio.length){
+                for(let mes of screen.audio){
+                    if(screen.audio.indexOf(mes) == screen.audio.length - 1){
+                        await this.bot.telegram.sendAudio(userId, mes.media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error)) 
+                    }
+                    else{
+                        await this.bot.telegram.sendAudio(userId, mes.media, {protect_content: screen.protect}).catch(error => console.log(error)) 
+                    }
+                } 
             }
-            if(screen.text){
-                await this.bot.telegram.sendMessage(userId, screen.text, {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error))
+            else{
+                if(screen.document.length){
+                    await this.bot.telegram.sendMediaGroup(userId, screen.document, {protect_content: screen.protect}).catch(error => console.log(error))
+                }
+                if(screen.audio.length){
+                    for(let mes of screen.audio){
+                        await this.bot.telegram.sendAudio(userId, mes.media, {protect_content: screen.protect}).catch(error => console.log(error))
+                    }
+                }
+                if(screen.media.length){
+                    if(screen.media.length == 1 && screen.media[0].type == 'photo'){
+                        await this.bot.telegram.sendPhoto(userId, screen.media[0].media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error))  
+                    }
+                    else if(screen.media.length == 1 && screen.media[0].type == 'video'){
+                        await this.bot.telegram.sendVideo(userId, screen.media[0].media, {...keyboard(), caption: screen.text, protect_content: screen.protect}).catch(error => console.log(error))  
+                    }
+                    else{
+                       if(!screen.buttons.length){
+                            screen.media[0].caption = screen.text
+                            await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))  
+                        }
+                        else{
+                            await this.bot.telegram.sendMediaGroup(userId, screen.media, {protect_content: screen.protect}).catch(error => console.log(error))
+                            await this.bot.telegram.sendMessage(userId, emptyText(), {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error)) 
+                        } 
+                    }
+                }
+                else{
+                    if(screen.buttons.length || screen.text){
+                        await this.bot.telegram.sendMessage(userId, emptyText(), {...keyboard(), protect_content: screen.protect}).catch(error => console.log(error))
+                    }
+                }
             }
         }
-
     }
 
     async errorMessage(userId){
@@ -114,10 +152,36 @@ export class BotClass {
         else if(field === 'DOCUMENT'){
             await Screen.updateOne({owner: this._id, name: this.mode}, {$addToSet: {document: {type: 'document', media: data}}})
         }
-        console.log(data)
-        const screen = await Screen.findOne({owner: this._id, name: this.mode})
-        await this.message(screen, this.owner)
-        await this.bot.telegram.sendMessage(this.owner, 'Done! Close window on your pc or send new variant').catch(error => console.log(error))
     }
 
+    async addInfoForScreen(ctx){
+        if(typeof ctx.message['text'] !== 'undefined'){
+            console.log('TEXT')
+            await this.createScreen('TEXT', ctx.message.text)
+        }
+        if(typeof ctx.message['caption'] !== 'undefined'){
+            console.log('CAPTION')
+            await this.createScreen('CAPTION', ctx.message.caption)
+        }
+        if(typeof ctx.message['photo'] !== 'undefined'){
+            console.log('PHOTO')
+            await this.createScreen('PHOTO', ctx.message.photo[0].file_id)
+        }
+        if(typeof ctx.message['video'] !== 'undefined'){
+            console.log('VIDEO')
+            await this.createScreen('VIDEO', ctx.message.video.file_id)
+        }
+        if(typeof ctx.message['audio'] !== 'undefined'){
+            console.log('AUDIO')
+            await this.createScreen('VOICE', ctx.message.audio.file_id)
+        }
+        if(typeof ctx.message['voice'] !== 'undefined'){
+            console.log('VOICE')
+            await this.createScreen('VOICE', ctx.message.voice.file_id)
+        }
+        if(typeof ctx.message['document'] !== 'undefined'){
+            console.log('DOCUMENT')
+            await this.createScreen('DOCUMENT', ctx.message.document.file_id)
+        }
+    }
 }

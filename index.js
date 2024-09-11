@@ -29,6 +29,7 @@ async function startBot(){
         })
         SocketApt.socket.on('sendMeScreen', async (data) => {
             const botModule = bots.find(item => item._id == data.botId)
+            await botModule.updateBotData()
             const screen = await botModule.getScreen(data.screenId)
             await botModule.message(screen, data.userId)
             console.log('sendMeScreen')
