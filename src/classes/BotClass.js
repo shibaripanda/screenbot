@@ -1,7 +1,7 @@
 import { Markup } from "telegraf"
 import { Screen } from "../models/screen.js"
-import { SocketApt } from "../socket/api/socket-api.js"
 import { AppClass } from "./AppClass.js"
+import { SocketApt } from "../socket/api/socket-api.js"
 
 
 export class BotClass {
@@ -152,6 +152,7 @@ export class BotClass {
         else if(field === 'DOCUMENT'){
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data}}})
         }
+        SocketApt.socket.emit('updateScreenInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
     }
 
     async addInfoForScreen(ctx){

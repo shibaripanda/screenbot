@@ -15,10 +15,6 @@ export class SocketApt {
             console.log('disconnect')
         })
 
-        this.socket.on('res', (data) => {
-            console.log(data)
-        })
-
         this.socket.on('exception', (data) => {
             console.log(data)
         })

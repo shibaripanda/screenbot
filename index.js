@@ -1,14 +1,6 @@
 import 'dotenv/config'
-import { Telegraf } from 'telegraf'
 import { db } from './src/db/db.js'
 import { AppClass } from './src/classes/AppClass.js'
-import { botStart } from './src/triggers/botStart.js'
-import { BotClass } from './src/classes/BotClass.js'
-import { botMessage } from './src/triggers/botMessage.js'
-import { botCallback } from './src/triggers/botCallback.js'
-import { botChatMember } from './src/triggers/botChatMember.js'
-import { botCommands } from './src/triggers/botCommands.js'
-import { readTextFile } from './src/helper/readTextFile.js'
 import { useConnectSocket } from './src/socket/hooks/useConnectSocket.js'
 import { SocketApt } from './src/socket/api/socket-api.js'
 import { startBots } from './src/modules/startBots.js'
@@ -37,7 +29,6 @@ async function startBot(){
             await botModule.message(screen, data.userId)
             console.log('sendMeScreen')
         })
-        // SocketApt.socket.emit('helloFromServer', process.env.SERVER_TOKEN)
 
         if(status){
             const appContext = await app.getAllActiveBots()
