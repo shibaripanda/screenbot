@@ -127,7 +127,7 @@ export class BotClass {
     }
 
     async getZeroScreen(){
-        const res = await Screen.findOne({owner: this._id, index: 'screen_0'})
+        const res = await Screen.findOne({owner: this._id, name: 'Start screen'})
         return res
     }
 
@@ -136,21 +136,22 @@ export class BotClass {
         return res
     }
 
-    async createScreen(field, data){
-        if(field === 'TEXT' || field === 'CAPTION'){
+    async createScreen(field, data, caption){
+        // if(field === 'TEXT' || field === 'CAPTION'){
+        if(field === 'TEXT'){
             await Screen.updateOne({owner: this._id, _id: this.mode}, {text: data})
         }
         else if(field === 'PHOTO'){
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'VIDEO'){
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'VOICE'){
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'DOCUMENT'){
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data}}})
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data, tx: caption ? caption : ''}}})
         }
         SocketApt.socket.emit('updateScreenInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
     }
@@ -166,23 +167,23 @@ export class BotClass {
         }
         if(typeof ctx.message['photo'] !== 'undefined'){
             console.log('PHOTO')
-            await this.createScreen('PHOTO', ctx.message.photo[0].file_id)
+            await this.createScreen('PHOTO', ctx.message.photo[0].file_id, ctx.message.caption)
         }
         if(typeof ctx.message['video'] !== 'undefined'){
             console.log('VIDEO')
-            await this.createScreen('VIDEO', ctx.message.video.file_id)
+            await this.createScreen('VIDEO', ctx.message.video.file_id, ctx.message.caption)
         }
         if(typeof ctx.message['audio'] !== 'undefined'){
             console.log('AUDIO')
-            await this.createScreen('VOICE', ctx.message.audio.file_id)
+            await this.createScreen('VOICE', ctx.message.audio.file_id, ctx.message.caption)
         }
         if(typeof ctx.message['voice'] !== 'undefined'){
             console.log('VOICE')
-            await this.createScreen('VOICE', ctx.message.voice.file_id)
+            await this.createScreen('VOICE', ctx.message.voice.file_id, ctx.message.caption)
         }
         if(typeof ctx.message['document'] !== 'undefined'){
             console.log('DOCUMENT')
-            await this.createScreen('DOCUMENT', ctx.message.document.file_id)
+            await this.createScreen('DOCUMENT', ctx.message.document.file_id, ctx.message.caption)
         }
     }
 }
