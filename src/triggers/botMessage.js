@@ -1,3 +1,4 @@
+import { UserClass } from "../classes/UserClass.js"
 
 export const botMessage = async (botModule) => {
     try{
@@ -5,12 +6,16 @@ export const botMessage = async (botModule) => {
             await botModule.updateBotData()
             if(ctx.message.chat.id > 0 && !ctx.from.is_bot){
                 if(botModule.owner == ctx.message.chat.id && botModule.mode !== ''){
-
                     await botModule.addInfoForScreen(ctx)
-                    
                 }
                 else{
-                    console.log('no new screen')
+                    const user = new UserClass(ctx.from, botModule._id)
+                    await user.updateUserData()
+
+                    console.log(await user.getCurrentVariable())
+
+                    console.log('-user-', user)
+                    console.log('-screen-', user.screen)
                 }
 
             }

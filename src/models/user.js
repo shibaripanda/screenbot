@@ -12,8 +12,12 @@ data: {
     required: true,
 },
 activBot: {
-    type: Boolean,
+    type: Object,
     required: false
+},
+screen: {
+    type: Object,
+    required: false,
 }
 }, { timestamps: true});
 

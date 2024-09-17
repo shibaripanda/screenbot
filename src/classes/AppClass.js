@@ -1,4 +1,5 @@
 import { Bot } from "../models/bot.js"
+import { User } from "../models/user.js"
 import { startBots } from "../modules/startBots.js"
 
 export class AppClass {
@@ -25,6 +26,10 @@ export class AppClass {
 
     async getBot(_id) {
         return await Bot.findOne({_id: _id})
+    }
+
+    async getUser(id) {
+        return await User.findOne({id: id})
     }
 
 }

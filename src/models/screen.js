@@ -6,6 +6,7 @@ const screenSchema = new Schema({
     owner: {type: String},
     name: {type: String},
     index: {type: String},
+    variable: {type: String},
     media: {
         type: Array,
         required: true,

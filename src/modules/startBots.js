@@ -12,7 +12,7 @@ export const startBots = async (i, bots) => {
     const bot = new Telegraf(i.token)
     const botModule = new BotClass(bot, i)
     await botStart(botModule)
-    // await botChatMember(botModule)
+    await botChatMember(botModule)
     // await botCommands(botModule)
     await botMessage(botModule)
     await botCallback(botModule)
