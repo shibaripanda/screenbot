@@ -1,3 +1,4 @@
+import { Screen } from "../models/screen.js"
 import { User } from "../models/user.js"
 import { AppClass } from "./AppClass.js"
 
@@ -21,9 +22,28 @@ export class UserClass {
         await User.updateOne({id: this.id}, {[screen]: screenId}, {upsert: true})
     }
 
+    async updateData(info){
+        this.data[await this.getCurrentVariable()] = info
+        const data = `data.${this.botId}`
+        await User.updateOne({id: this.id}, {[data]: this.data})
+    }
+
     async getCurrentVariable(){
-        const variable = await Screen.findOne({_id: this.screen})
-        return variable.variable
+        if(this.screen === 'Start screen'){
+           const variable = await Screen.findOne({name: this.screen, owner: this.botId})
+           return variable.variable 
+        }
+        const variable = await Screen.findOne({_id: this.screen, owner: this.botId})
+        return variable.variable 
+    }
+
+    async getScreenForAns(){
+        if(this.screen === 'Start screen'){
+           const screen = await Screen.findOne({name: this.screen, owner: this.botId})
+           return {screen: screen, status: screen.ansScreen}
+        }
+        const screen = await Screen.findOne({_id: this.screen, owner: this.botId})
+        return {screen: screen, status: screen.ansScreen}
     }
 
     async updateUserData(){

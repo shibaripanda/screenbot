@@ -11,7 +11,6 @@ export const botCallback = async (botModule) => {
                 const user = new UserClass(ctx.from, botModule._id)
                 await user.updateUserData()
                 await user.updateScreen(ctx.update.callback_query.data)
-                // await user.updateVariableForSaveData(screen.variable)
 
             }
             else{

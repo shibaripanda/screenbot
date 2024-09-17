@@ -11,11 +11,18 @@ export const botMessage = async (botModule) => {
                 else{
                     const user = new UserClass(ctx.from, botModule._id)
                     await user.updateUserData()
+                    if(await user.getCurrentVariable() && typeof ctx.message['text'] !== 'undefined'){
+                        await user.updateData(ctx.message.text)
+                    }
+                    const ans = await user.getScreenForAns()
+                    if(ans){
+                        const screen = await botModule.getScreen(ans.status)
+                        await botModule.message(screen, user.id)
+                        await user.updateScreen(screen._id)
+                    }
 
-                    console.log(await user.getCurrentVariable())
-
-                    console.log('-user-', user)
-                    console.log('-screen-', user.screen)
+                    // console.log('-user-', user)
+                    // console.log('-screen-', user.screen)
                 }
 
             }
