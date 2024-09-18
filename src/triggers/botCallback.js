@@ -7,11 +7,10 @@ export const botCallback = async (botModule) => {
 
             const screen = await botModule.getScreen(ctx.update.callback_query.data) 
             if(screen){
-                await botModule.message(screen, ctx.update.callback_query.from.id)
                 const user = new UserClass(ctx.from, botModule._id)
                 await user.updateUserData()
                 await user.updateScreen(ctx.update.callback_query.data)
-
+                await botModule.message(screen, ctx.update.callback_query.from.id, user.data)
             }
             else{
                await botModule.errorMessage(ctx.update.callback_query.from.id) 
