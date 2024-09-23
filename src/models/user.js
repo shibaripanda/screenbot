@@ -18,6 +18,10 @@ activBot: {
 screen: {
     type: Object,
     required: false,
+},
+username: {
+    type: String,
+    required: false,
 }
 }, { timestamps: true});
 

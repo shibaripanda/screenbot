@@ -59,11 +59,19 @@ export class UserClass {
     }
 
     async updateStatusInBot(status){
+        const user = await User.findOne({id: this.id})
         const link = `activBot.${this.botId}`
-        const data = `data.${this.botId}`
-        const screen = `screen.${this.botId}`
-        if(status === 'kicked') await User.updateOne({id: this.id}, {[link]: false}, {upsert: true})
-        else if (status === 'member') await User.updateOne({id: this.id}, {[link]: true, [data]: {}, [screen]: 'Start screen'}, {upsert: true})
+        if(!user){
+            // const link = `activBot.${this.botId}`
+            const data = `data.${this.botId}`
+            const screen = `screen.${this.botId}`
+            if(status === 'kicked') await User.updateOne({id: this.id}, {[link]: false, username: this.username ? this.username : 'not set'}, {upsert: true})
+            else if (status === 'member') await User.updateOne({id: this.id}, {[link]: true, [data]: {}, [screen]: 'Start screen', username: this.username ? this.username : 'not set'}, {upsert: true})
+        }
+        else{
+            if(status === 'kicked') await User.updateOne({id: this.id}, {[link]: false, username: this.username ? this.username : 'not set'}, {upsert: true})
+            else if (status === 'member') await User.updateOne({id: this.id}, {[link]: true, username: this.username ? this.username : 'not set'}, {upsert: true})
+        }     
     }
     
 }
