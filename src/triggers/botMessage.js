@@ -27,6 +27,7 @@ export const botMessage = async (botModule) => {
                     
                     // console.log('-user-', user)
                     // console.log('-screen-', user.screen)
+                    await user.updateToClient()
                 }
 
             }

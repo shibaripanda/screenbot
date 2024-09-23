@@ -18,7 +18,7 @@ async function startBot(){
         })
         SocketApt.socket.on('getBot', (data) => {
             console.log(data)
-          })
+        })
         SocketApt.socket.on('offBot', async (data) => {
             await app.stopBot(bots, data)
         })
@@ -28,6 +28,19 @@ async function startBot(){
             const screen = await botModule.getScreen(data.screenId)
             await botModule.message(screen, data.userId)
             console.log('sendMeScreen')
+        })
+        SocketApt.socket.on('sendScreenToUser', async (data) => {
+            const botModule = bots.find(item => item._id == data.botId)
+            await botModule.updateBotData()
+            const screen = await botModule.getScreen(data.screenId)
+            await botModule.message(screen, data.userId)
+            console.log('sendScreenToUser')
+        })
+        SocketApt.socket.on('sendTextToUser', async (data) => {
+            const botModule = bots.find(item => item._id == data.botId)
+            await botModule.updateBotData()
+            await botModule.bot.telegram.sendMessage(data.userId, data.text, {protect_content: true, parse_mode: 'HTML'}).catch(error => console.log(error))
+            console.log('sendTextToUser')
         })
 
         if(status){

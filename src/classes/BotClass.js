@@ -179,6 +179,7 @@ export class BotClass {
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data, tx: caption ? caption : ''}}})
         }
         SocketApt.socket.emit('updateScreenInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
+        
     }
 
     async addInfoForScreen(ctx){

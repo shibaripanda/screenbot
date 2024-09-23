@@ -1,5 +1,6 @@
 import { Screen } from "../models/screen.js"
 import { User } from "../models/user.js"
+import { SocketApt } from "../socket/api/socket-api.js"
 import { AppClass } from "./AppClass.js"
 
 export class UserClass {
@@ -14,6 +15,10 @@ export class UserClass {
         this.activBot = true
         this.data = {}
         this.screen = ''
+    }
+
+    async updateToClient(){
+        SocketApt.socket.emit('updateUserToClient', {botId: this.botId, token: process.env.SERVER_TOKEN})
     }
 
     async updateScreen(screenId){

@@ -11,6 +11,7 @@ export const botCallback = async (botModule) => {
                 await user.updateUserData()
                 await user.updateScreen(ctx.update.callback_query.data)
                 await botModule.message(screen, ctx.update.callback_query.from.id, user.data)
+                await user.updateToClient()
             }
             else{
                await botModule.errorMessage(ctx.update.callback_query.from.id) 
