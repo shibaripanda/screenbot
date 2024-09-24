@@ -16,17 +16,15 @@ export const botMessage = async (botModule) => {
                     if(await user.getCurrentVariable() && typeof ctx.message['text'] !== 'undefined'){
                         await user.updateData(ctx.message.text)
                     }
+
                     const ans = await user.getScreenForAns()
-                    if(ans){
-                        // console.log(user.data)
+                    if(ans.status){
+                        console.log(ans.status)
                         const screen = await botModule.getScreen(ans.status)
                         await botModule.message(screen, user.id, user.data)
                         await user.updateScreen(screen._id)
                     }
-                    // console.log(user)
-                    
-                    // console.log('-user-', user)
-                    // console.log('-screen-', user.screen)
+
                     await user.updateToClient()
                 }
 

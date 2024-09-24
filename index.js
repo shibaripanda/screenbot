@@ -34,6 +34,8 @@ async function startBot(){
             await botModule.updateBotData()
             const screen = await botModule.getScreen(data.screenId)
             await botModule.message(screen, data.userId)
+            await app.updateMonitScreen(data.userId, data.botId, data.screenId)
+            await app.updateToClientMonit(data.botId)
             console.log('sendScreenToUser')
         })
         SocketApt.socket.on('sendTextToUser', async (data) => {

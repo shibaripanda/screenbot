@@ -1,6 +1,7 @@
 import { Bot } from "../models/bot.js"
 import { User } from "../models/user.js"
 import { startBots } from "../modules/startBots.js"
+import { SocketApt } from "../socket/api/socket-api.js"
 
 export class AppClass {
 
@@ -30,6 +31,15 @@ export class AppClass {
 
     async getUser(id) {
         return await User.findOne({id: id})
+    }
+
+    async updateMonitScreen(userId, botId, screenId){
+        const screen = `screen.${botId}`
+        await User.updateOne({id: userId}, {[screen]: screenId})
+    }
+
+    async updateToClientMonit(botId){
+        SocketApt.socket.emit('updateUserToClient', {botId: botId, token: process.env.SERVER_TOKEN})
     }
 
 }
