@@ -1,12 +1,12 @@
 import { Screen } from "../models/screen.js"
 import { User } from "../models/user.js"
 import { SocketApt } from "../socket/api/socket-api.js"
-import { AppClass } from "./AppClass.js"
 
 
 export class UserClass {
 
     constructor(user, botId) {
+        this.user = user
         this.id =  user.id,
         this.first_name = user.first_name,
         this.username = user.username,
@@ -24,13 +24,13 @@ export class UserClass {
     async updateScreen(screenId){
         this.screen = screenId
         const screen = `screen.${this.botId}`
-        await User.updateOne({id: this.id}, {[screen]: screenId}, {upsert: true})
+        await this.user.updateOne({id: this.id}, {[screen]: screenId}, {upsert: true})
     }
 
     async updateData(info){
         this.data[await this.getCurrentVariable()] = info
         const data = `data.${this.botId}`
-        await User.updateOne({id: this.id}, {[data]: this.data})
+        await this.user.updateOne({id: this.id}, {[data]: this.data})
     }
 
     async getCurrentVariable(){
@@ -51,22 +51,10 @@ export class UserClass {
         return {screen: screen, status: screen.ansScreen}
     }
 
-    // async updateUserData(){
-    //     const app = new AppClass()
-    //     const res = await app.getUser(this.id)
-    //     this.activBot = res.activBot[this.botId]
-    //     this.data = res.data[this.botId]
-    //     this.screen = res.screen[this.botId]
-    //     if(!this.activBot){
-    //         await this.updateStatusInBot('member')
-    //         await this.updateUserData()
-    //     }
-    // }
-
     async updateStatusInBot(status){
         const link = `activBot.${this.botId}`
-        if(status === 'kicked') await User.updateOne({id: this.id}, {[link]: false})
-        else if (status === 'member') await User.updateOne({id: this.id}, {[link]: true})
+        if(status === 'kicked') await this.user.updateOne({[link]: false})
+        else if (status === 'member') await this.user.updateOne({[link]: true})
     } 
     
 }

@@ -21,7 +21,7 @@ export const botMessage = async (botModule) => {
                         console.log(ans.status)
                         const screen = await botModule.getScreen(ans.status)
                         await botModule.message(screen, user.id, user.data)
-                        await user.updateScreen(screen._id)
+                        await user.updateScreen(screen._id.toString())
                     }
 
                     await user.updateToClient()
