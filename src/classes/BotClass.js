@@ -157,8 +157,9 @@ export class BotClass {
     }
 
     async setZeroScreen(id){
+        const screenStart = await this.getZeroScreen()
         const screen = `screen.${this._id}`
-        await User.updateOne({id: id}, {[screen]: 'Start screen'})
+        await User.updateOne({id: id}, {[screen]: screenStart._id})
     }
 
     async getScreen(screenId){
