@@ -2,6 +2,7 @@ import { Markup } from "telegraf"
 import { Screen } from "../models/screen.js"
 import { AppClass } from "./AppClass.js"
 import { SocketApt } from "../socket/api/socket-api.js"
+import { User } from "../models/user.js"
 
 
 export class BotClass {
