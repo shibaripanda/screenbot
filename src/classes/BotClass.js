@@ -146,7 +146,6 @@ export class BotClass {
         }
     }
 
-
     async errorMessage(userId){
         await this.bot.telegram.sendMessage(userId, 'error', {parse_mode: 'HTML', protect_content: false}).catch(error => console.log(error))
     }
@@ -154,6 +153,11 @@ export class BotClass {
     async getZeroScreen(){
         const res = await Screen.findOne({owner: this._id, name: 'Start screen'})
         return res
+    }
+
+    async setZeroScreen(id){
+        const screen = `screen.${this._id}`
+        await User.updateOne({id: id}, {[screen]: 'Start screen'})
     }
 
     async getScreen(screenId){
