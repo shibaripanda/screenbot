@@ -1,3 +1,4 @@
+import { getUser } from "../modules/getUser.js"
 
 export const botStart = async (botModule) => {
     try{
