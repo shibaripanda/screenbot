@@ -8,14 +8,13 @@ export class UserClass {
 
     constructor(user, botId) {
         this.id =  user.id,
-        this.is_bot = user.is_bot,
         this.first_name = user.first_name,
         this.username = user.username,
-        this.language_code = user.language_code
+        this.language = user.language
         this.botId = botId
-        this.activBot = true
-        this.data = {}
-        this.screen = ''
+        this.activBot = user.activBot[botId]
+        this.data = user.data[botId]
+        this.screen = user.screen[botId]
     }
 
     async updateToClient(){
