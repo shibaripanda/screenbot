@@ -8,8 +8,8 @@ export const botCallback = async (botModule) => {
             const screen = await botModule.getScreen(ctx.update.callback_query.data) 
             if(screen){
                 const user = await getUser(ctx.from, botModule._id)
-                await user.updateScreen(ctx.update.callback_query.data)
                 await botModule.message(screen, ctx.update.callback_query.from.id, user.data)
+                await user.updateScreen(ctx.update.callback_query.data)
                 await user.updateToClient()
             }
             else{

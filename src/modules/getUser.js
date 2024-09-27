@@ -21,7 +21,6 @@ export const getUser = async (userData, botId) => {
         user = await User.findOneAndUpdate({id: userData.id}, {[link]: true, [data]: {startTime: Date.now()}, [screen]: startScreen._id.toString()}, {returnDocument: "after"})
     }
 
-    console.log(user)
     return new UserClass(user, botId)
     
 }

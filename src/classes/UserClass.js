@@ -24,13 +24,13 @@ export class UserClass {
     async updateScreen(screenId){
         this.screen = screenId
         const screen = `screen.${this.botId}`
-        await this.user.updateOne({id: this.id}, {[screen]: screenId}, {upsert: true})
+        await this.user.updateOne({[screen]: screenId})
     }
 
     async updateData(info){
         this.data[await this.getCurrentVariable()] = info
         const data = `data.${this.botId}`
-        await this.user.updateOne({id: this.id}, {[data]: this.data})
+        await this.user.updateOne({[data]: this.data})
     }
 
     async getCurrentVariable(){
