@@ -22,6 +22,14 @@ screen: {
 username: {
     type: String,
     required: false,
+},
+language: {
+    type: String,
+    required: false,
+},
+first_name: {
+    type: String,
+    required: false,
 }
 }, { timestamps: true});
 

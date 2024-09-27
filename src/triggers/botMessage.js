@@ -1,4 +1,4 @@
-import { UserClass } from "../classes/UserClass.js"
+import { getUser } from "../modules/getUser.js"
 
 export const botMessage = async (botModule) => {
     try{
@@ -10,8 +10,7 @@ export const botMessage = async (botModule) => {
                 }
                 else{
 
-                    const user = new UserClass(ctx.from, botModule._id)
-                    await user.updateUserData()
+                    const user = await getUser(ctx.from, botModule._id)
 
                     if(await user.getCurrentVariable() && typeof ctx.message['text'] !== 'undefined'){
                         await user.updateData(ctx.message.text)

@@ -152,15 +152,15 @@ export class BotClass {
     }
 
     async getZeroScreen(){
-        const res = await Screen.findOne({owner: this._id, name: 'Start screen'})
-        return res
+        const screen = await Screen.findOne({owner: this._id, name: 'Start screen'})
+        return screen
     }
 
-    async setZeroScreen(id){
-        const screenStart = await this.getZeroScreen()
-        const screen = `screen.${this._id}`
-        await User.updateOne({id: id}, {[screen]: screenStart._id})
-    }
+    // async setZeroScreen(id){
+    //     const screenStart = await this.getZeroScreen()
+    //     const screen = `screen.${this._id}`
+    //     await User.updateOne({id: id}, {[screen]: screenStart._id})
+    // }
 
     async getScreen(screenId){
         const res = await Screen.findOne({owner: this._id, _id: screenId})
@@ -168,7 +168,6 @@ export class BotClass {
     }
 
     async createScreen(field, data, caption){
-        // if(field === 'TEXT' || field === 'CAPTION'){
         if(field === 'TEXT'){
             await Screen.updateOne({owner: this._id, _id: this.mode}, {text: data})
         }

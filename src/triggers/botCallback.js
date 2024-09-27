@@ -1,4 +1,4 @@
-import { UserClass } from "../classes/UserClass.js"
+import { getUser } from "../modules/getUser.js"
 
 export const botCallback = async (botModule) => {
     try{
@@ -7,8 +7,7 @@ export const botCallback = async (botModule) => {
 
             const screen = await botModule.getScreen(ctx.update.callback_query.data) 
             if(screen){
-                const user = new UserClass(ctx.from, botModule._id)
-                await user.updateUserData()
+                const user = await getUser(ctx.from, botModule._id)
                 await user.updateScreen(ctx.update.callback_query.data)
                 await botModule.message(screen, ctx.update.callback_query.from.id, user.data)
                 await user.updateToClient()
