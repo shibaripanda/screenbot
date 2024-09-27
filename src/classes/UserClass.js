@@ -64,7 +64,7 @@ export class UserClass {
     // }
 
     async updateStatusInBot(status){
-        const link = `activBot.${botId}`
+        const link = `activBot.${this.botId}`
         if(status === 'kicked') await User.updateOne({id: this.id}, {[link]: false})
         else if (status === 'member') await User.updateOne({id: this.id}, {[link]: true})
     } 
