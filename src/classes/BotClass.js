@@ -156,12 +156,6 @@ export class BotClass {
         return screen
     }
 
-    // async setZeroScreen(id){
-    //     const screenStart = await this.getZeroScreen()
-    //     const screen = `screen.${this._id}`
-    //     await User.updateOne({id: id}, {[screen]: screenStart._id})
-    // }
-
     async getScreen(screenId){
         const res = await Screen.findOne({owner: this._id, _id: screenId})
         return res
@@ -172,15 +166,31 @@ export class BotClass {
             await Screen.updateOne({owner: this._id, _id: this.mode}, {text: data})
         }
         else if(field === 'PHOTO'){
+            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
+            if(res.media.length === 10){
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media.splice(res.media.length - 1, 1)})
+            }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'VIDEO'){
+            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
+            if(res.media.length === 10){
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media.splice(res.media.length - 1, 1)})
+            }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'VOICE'){
+            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {audio: 1, _id: 0})
+            if(res.media.length === 10){
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {audio: res.audio.splice(res.audio.length - 1, 1)})
+            }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'DOCUMENT'){
+            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {document: 1, _id: 0})
+            if(res.media.length === 10){
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {document: res.document.splice(res.document.length - 1, 1)})
+            }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data, tx: caption ? caption : ''}}})
         }
         SocketApt.socket.emit('updateScreenInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
