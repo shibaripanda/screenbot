@@ -168,28 +168,34 @@ export class BotClass {
         else if(field === 'PHOTO'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
             if(res.media.length === 10){
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media.splice(res.media.length - 1, 1)})
+                res.media.splice(0, 1)
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media})
             }
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data, tx: caption ? caption : ''}}})
+            const url = await this.bot.telegram.getFileLink(data)
+            const buffer = await (await fetch(url.href)).arrayBuffer()
+            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
         }
         else if(field === 'VIDEO'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
             if(res.media.length === 10){
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media.splice(res.media.length - 1, 1)})
+                res.media.splice(0, 1)
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media})
             }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'VOICE'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {audio: 1, _id: 0})
-            if(res.media.length === 10){
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {audio: res.audio.splice(res.audio.length - 1, 1)})
+            if(res.audio.length === 10){
+                res.audio.splice(0, 1)
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {audio: res.audio})
             }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'DOCUMENT'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {document: 1, _id: 0})
-            if(res.media.length === 10){
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {document: res.document.splice(res.document.length - 1, 1)})
+            if(res.document.length === 10){
+                res.document.splice(0, 1)
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {document: res.document})
             }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data, tx: caption ? caption : ''}}})
         }
@@ -212,11 +218,13 @@ export class BotClass {
         }
         if(typeof ctx.message['video'] !== 'undefined'){
             console.log('VIDEO')
-            await this.createScreen('VIDEO', ctx.message.video.file_id, ctx.message.caption)
+            const name = ctx.message.caption ? ctx.message.caption : '' 
+            await this.createScreen('VIDEO', ctx.message.video.file_id,  name + ' / ' + ctx.message.video.file_name)
         }
         if(typeof ctx.message['audio'] !== 'undefined'){
             console.log('AUDIO')
-            await this.createScreen('VOICE', ctx.message.audio.file_id, ctx.message.caption)
+            const name = ctx.message.caption ? ctx.message.caption : ''
+            await this.createScreen('VOICE', ctx.message.audio.file_id, name + ' / ' + ctx.message.audio.file_name)
         }
         if(typeof ctx.message['voice'] !== 'undefined'){
             console.log('VOICE')
@@ -224,7 +232,8 @@ export class BotClass {
         }
         if(typeof ctx.message['document'] !== 'undefined'){
             console.log('DOCUMENT')
-            await this.createScreen('DOCUMENT', ctx.message.document.file_id, ctx.message.caption)
+            const name = ctx.message.caption ? ctx.message.caption : '' 
+            await this.createScreen('DOCUMENT', ctx.message.document.file_id, name + ' / ' + ctx.message.document.file_name)
         }
     }
 }
