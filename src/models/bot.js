@@ -9,6 +9,7 @@ export const BotSchema = new Schema({
   name: {type: String},
   username: {type: String},
   mode: {type: String},
+  content: {type: Array}
   }, {timestamps: true})
 
 export const Bot = mongoose.model('Bot', BotSchema)

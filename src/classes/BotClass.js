@@ -8,6 +8,7 @@ import { User } from "../models/user.js"
 export class BotClass {
 
     constructor(bot, data) {
+        this.mongoBot = data
         this.bot = bot
         this.owner = data.owner
         this.name = data.name
@@ -164,6 +165,7 @@ export class BotClass {
     async createScreen(field, data, caption){
         if(field === 'TEXT'){
             await Screen.updateOne({owner: this._id, _id: this.mode}, {text: data})
+            await this.mongoBot.updateOne({$addToSet: {content: {type: 'text', media: data, tx: data.substring(0, 25) + '...'}}})
         }
         else if(field === 'PHOTO'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
@@ -174,6 +176,7 @@ export class BotClass {
             const url = await this.bot.telegram.getFileLink(data)
             const buffer = await (await fetch(url.href)).arrayBuffer()
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
+            await this.mongoBot.updateOne({$addToSet: {content: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
         }
         else if(field === 'VIDEO'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
@@ -182,6 +185,7 @@ export class BotClass {
                 await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media})
             }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data, tx: caption ? caption : ''}}})
+            await this.mongoBot.updateOne({$addToSet: {content: {type: 'video', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'VOICE'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {audio: 1, _id: 0})
@@ -190,6 +194,7 @@ export class BotClass {
                 await Screen.updateOne({owner: this._id, _id: this.mode}, {audio: res.audio})
             }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data, tx: caption ? caption : ''}}})
+            await this.mongoBot.updateOne({$addToSet: {content: {type: 'audio', media: data, tx: caption ? caption : ''}}})
         }
         else if(field === 'DOCUMENT'){
             const res = await Screen.findOne({owner: this._id, _id: this.mode}, {document: 1, _id: 0})
@@ -198,6 +203,7 @@ export class BotClass {
                 await Screen.updateOne({owner: this._id, _id: this.mode}, {document: res.document})
             }
             await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data, tx: caption ? caption : ''}}})
+            await this.mongoBot.updateOne({$addToSet: {content: {type: 'document', media: data, tx: caption ? caption : ''}}})
         }
         SocketApt.socket.emit('updateScreenInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
         
@@ -219,12 +225,12 @@ export class BotClass {
         if(typeof ctx.message['video'] !== 'undefined'){
             console.log('VIDEO')
             const name = ctx.message.caption ? ctx.message.caption : '' 
-            await this.createScreen('VIDEO', ctx.message.video.file_id,  name + ' / ' + ctx.message.video.file_name)
+            await this.createScreen('VIDEO', ctx.message.video.file_id,  name + ' ' + ctx.message.video.file_name)
         }
         if(typeof ctx.message['audio'] !== 'undefined'){
             console.log('AUDIO')
             const name = ctx.message.caption ? ctx.message.caption : ''
-            await this.createScreen('VOICE', ctx.message.audio.file_id, name + ' / ' + ctx.message.audio.file_name)
+            await this.createScreen('VOICE', ctx.message.audio.file_id, name + ' ' + ctx.message.audio.file_name)
         }
         if(typeof ctx.message['voice'] !== 'undefined'){
             console.log('VOICE')
@@ -233,7 +239,7 @@ export class BotClass {
         if(typeof ctx.message['document'] !== 'undefined'){
             console.log('DOCUMENT')
             const name = ctx.message.caption ? ctx.message.caption : '' 
-            await this.createScreen('DOCUMENT', ctx.message.document.file_id, name + ' / ' + ctx.message.document.file_name)
+            await this.createScreen('DOCUMENT', ctx.message.document.file_id, name + '  ' + ctx.message.document.file_name)
         }
     }
 }
