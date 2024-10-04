@@ -2,8 +2,6 @@ import { Markup } from "telegraf"
 import { Screen } from "../models/screen.js"
 import { AppClass } from "./AppClass.js"
 import { SocketApt } from "../socket/api/socket-api.js"
-import { User } from "../models/user.js"
-
 
 export class BotClass {
 
@@ -148,6 +146,15 @@ export class BotClass {
         }
     }
 
+    async messageContent(userId, content){
+        if(content.type === 'text'){
+            await this.bot.telegram.sendMessage(userId, content.media, {parse_mode: 'HTML'}).catch(error => console.log(error))
+        }
+        else{
+            await this.bot.telegram.sendMediaGroup(userId, [content], {parse_mode: 'HTML'}).catch(error => console.log(error))
+        }
+    }
+
     async errorMessage(userId){
         await this.bot.telegram.sendMessage(userId, 'error', {parse_mode: 'HTML', protect_content: false}).catch(error => console.log(error))
     }
@@ -163,50 +170,71 @@ export class BotClass {
     }
 
     async createScreen(field, data, caption){
-        if(field === 'TEXT'){
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {text: data})
-            await this.mongoBot.updateOne({$addToSet: {content: {type: 'text', media: data, tx: data.substring(0, 25) + '...'}}})
-        }
-        else if(field === 'PHOTO'){
-            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
-            if(res.media.length === 10){
-                res.media.splice(0, 1)
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media})
+        if(this.mode === 'addContent'){
+            if(field === 'TEXT'){
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'text', media: data, tx: data.substring(0, 25) + '...'}}})
             }
-            const url = await this.bot.telegram.getFileLink(data)
-            const buffer = await (await fetch(url.href)).arrayBuffer()
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
-            await this.mongoBot.updateOne({$addToSet: {content: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
-        }
-        else if(field === 'VIDEO'){
-            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
-            if(res.media.length === 10){
-                res.media.splice(0, 1)
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media})
+            else if(field === 'PHOTO'){
+                const url = await this.bot.telegram.getFileLink(data)
+                const buffer = await (await fetch(url.href)).arrayBuffer()
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
             }
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data, tx: caption ? caption : ''}}})
-            await this.mongoBot.updateOne({$addToSet: {content: {type: 'video', media: data, tx: caption ? caption : ''}}})
-        }
-        else if(field === 'VOICE'){
-            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {audio: 1, _id: 0})
-            if(res.audio.length === 10){
-                res.audio.splice(0, 1)
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {audio: res.audio})
+            else if(field === 'VIDEO'){
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'video', media: data, tx: caption ? caption : ''}}})
             }
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data, tx: caption ? caption : ''}}})
-            await this.mongoBot.updateOne({$addToSet: {content: {type: 'audio', media: data, tx: caption ? caption : ''}}})
-        }
-        else if(field === 'DOCUMENT'){
-            const res = await Screen.findOne({owner: this._id, _id: this.mode}, {document: 1, _id: 0})
-            if(res.document.length === 10){
-                res.document.splice(0, 1)
-                await Screen.updateOne({owner: this._id, _id: this.mode}, {document: res.document})
+            else if(field === 'VOICE'){
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'audio', media: data, tx: caption ? caption : ''}}})
             }
-            await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data, tx: caption ? caption : ''}}})
-            await this.mongoBot.updateOne({$addToSet: {content: {type: 'document', media: data, tx: caption ? caption : ''}}})
+            else if(field === 'DOCUMENT'){
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'document', media: data, tx: caption ? caption : ''}}})
+            }
+            SocketApt.socket.emit('updateContentInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
         }
-        SocketApt.socket.emit('updateScreenInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
-        
+        else{
+            if(field === 'TEXT'){
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {text: data})
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'text', media: data, tx: data.substring(0, 25) + '...'}}})
+            }
+            else if(field === 'PHOTO'){
+                const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
+                if(res.media.length === 10){
+                    res.media.splice(0, 1)
+                    await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media})
+                }
+                const url = await this.bot.telegram.getFileLink(data)
+                const buffer = await (await fetch(url.href)).arrayBuffer()
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'photo', media: data, tx: caption ? caption : '', buffer: Buffer.from(buffer).toString('base64')}}})
+            }
+            else if(field === 'VIDEO'){
+                const res = await Screen.findOne({owner: this._id, _id: this.mode}, {media: 1, _id: 0})
+                if(res.media.length === 10){
+                    res.media.splice(0, 1)
+                    await Screen.updateOne({owner: this._id, _id: this.mode}, {media: res.media})
+                }
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {media: {type: 'video', media: data, tx: caption ? caption : ''}}})
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'video', media: data, tx: caption ? caption : ''}}})
+            }
+            else if(field === 'VOICE'){
+                const res = await Screen.findOne({owner: this._id, _id: this.mode}, {audio: 1, _id: 0})
+                if(res.audio.length === 10){
+                    res.audio.splice(0, 1)
+                    await Screen.updateOne({owner: this._id, _id: this.mode}, {audio: res.audio})
+                }
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {audio: {type: 'audio', media: data, tx: caption ? caption : ''}}})
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'audio', media: data, tx: caption ? caption : ''}}})
+            }
+            else if(field === 'DOCUMENT'){
+                const res = await Screen.findOne({owner: this._id, _id: this.mode}, {document: 1, _id: 0})
+                if(res.document.length === 10){
+                    res.document.splice(0, 1)
+                    await Screen.updateOne({owner: this._id, _id: this.mode}, {document: res.document})
+                }
+                await Screen.updateOne({owner: this._id, _id: this.mode}, {$addToSet: {document: {type: 'document', media: data, tx: caption ? caption : ''}}})
+                await this.mongoBot.updateOne({$addToSet: {content: {type: 'document', media: data, tx: caption ? caption : ''}}})
+            }
+            SocketApt.socket.emit('updateScreenInfo', {botId: this._id, token: process.env.SERVER_TOKEN})
+        }
     }
 
     async addInfoForScreen(ctx){
